@@ -40,7 +40,7 @@ inline constexpr size_t get_highest_resistance_step() {
   return get_nsteps() - get_lowest_resistance_step();
 }
 
-class Driver : public final I2CDeviceBase {
+class Driver final : public I2CDeviceBase {
  private:
   uint8_t last_read_ = 0;
   const uint8_t kSlaveAddress;
@@ -82,6 +82,7 @@ class Driver : public final I2CDeviceBase {
   virtual void PushData(uint8_t value) {
     last_read_ = value;
   }
+  virtual void Reset() {}
 
   virtual void Run(void) {}
 };

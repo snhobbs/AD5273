@@ -57,10 +57,13 @@ class Driver final : public I2CDeviceBase {
 
  public:
   explicit Driver(const bool a0 = false)
-      : kSlaveAddress{static_cast<uint8_t>((kSlaveAddressBase << 1) |
+      : kSlaveAddress{static_cast<uint8_t>((kSlaveAddressBase) |
                       static_cast<uint8_t>(a0))} {}
   virtual ~Driver(void) {}
 
+  static constexpr uint8_t get_max(void) {
+    return get_nsteps();
+  }
   uint8_t get_value(void) {
     return last_read_ & ~(0x3 << kOtpValidationStart);
   }
@@ -77,12 +80,16 @@ class Driver final : public I2CDeviceBase {
     InsertOperation(
         {I2COperationType::kWrite, MakeI2CSlaveReadAddress(kSlaveAddress)});
     InsertOperation({I2COperationType::kStart});
+    InsertOperation({I2COperationType::kRead});
+    InsertOperation({I2COperationType::kStop});
   }
 
   virtual void PushData(uint8_t value) {
     last_read_ = value;
   }
-  virtual void Reset() {}
+  virtual void Reset() {
+    ResetOperations();
+  }
 
   virtual void Run(void) {}
 };
